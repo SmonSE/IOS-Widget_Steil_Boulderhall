@@ -1,3 +1,5 @@
+![Screenshot](screenshot.jpg)
+
 # SteilOccupancy
 Shows the current occupancy of Steil bouldering hall in a scriptable widget
 
