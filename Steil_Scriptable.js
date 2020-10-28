@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: red; icon-glyph: magic;
 // Steil Boulderhalle Widget 
 
 let param = args.widgetParameter
@@ -7,8 +10,8 @@ if (param != null && param.length > 0)
   }
 
 const widget = new ListWidget()
-
 const storeCapacity = await currOccupancy()
+const storeCapLeft = await currLeft()
 await createWidget()
 
 
@@ -19,24 +22,25 @@ if (!config.runsInWidget) {
 Script.setWidget(widget)
 Script.complete()
 
+
 // build widget content
 async function createWidget() {
 
     widget.addSpacer(4)
-    const logoImg = await getImage('steiles-logo.png')
+    const logoImg = await getImage('steil-logo.png')
 
     widget.setPadding(10, 10, 10, 10)
     const titleFontSize = 12
     const detailFontSize = 36
 
     const logoStack = widget.addStack()
-    logoStack.addSpacer(65)
+    logoStack.addSpacer(75)
     const logoImageStack = logoStack.addStack()
     logoStack.layoutHorizontally()
     logoImageStack.backgroundColor = new Color("#ffffff", 1.0)
     logoImageStack.cornerRadius = 10
     const wimg = logoImageStack.addImage(logoImg)
-    wimg.imageSize = new Size(60, 60)
+    wimg.imageSize = new Size(50, 50)
     wimg.rightAlignImage()
     widget.addSpacer()
     
@@ -47,19 +51,29 @@ async function createWidget() {
     let column = row.addStack()
     column.layoutVertically()
     
-
     const paperText = column.addText("STEIL BOULDERHALLE")
     paperText.font = Font.mediumRoundedSystemFont(11)
-
-    const packageCount = column.addText(storeCapacity.toString())
-    packageCount.font = Font.mediumRoundedSystemFont(22)
-    if (storeCapacity < 30) {
+    
+    //Counter Besucher
+    const packageCount = column.addText("Besucher: " + storeCapacity.toString())
+    packageCount.font = Font.mediumRoundedSystemFont(16)
+    if (storeCapacity > 80) {
         packageCount.textColor = new Color("#E50000")
     } else {
         packageCount.textColor = new Color("#00CD66")
     }
     widget.addSpacer(4)
-
+       
+    //Counter Freie Besucher
+    const packageCounter = column.addText("Frei: " + storeCapLeft.toString())
+    packageCounter.font = Font.mediumRoundedSystemFont(16)
+    if (storeCapacity < 20) {
+        packageCounter.textColor = new Color("#E50000")
+    } else {
+        packageCounter.textColor = new Color("#00CD66")
+    }
+//     widget.addSpacer(4)
+    
     const row2 = widget.addStack()
     row2.layoutVertically()
 
@@ -67,44 +81,46 @@ async function createWidget() {
     street.font = Font.regularSystemFont(11)
     
     const city = row2.addText("76185 Karlsruhe")
-    city.font = Font.regularSystemFont(11)
-    
+    city.font = Font.regularSystemFont(11)    
 }
 
 
 // get the current occupancy 
-async function currOccupancy() {
-  
+async function currOccupancy() {  
+    // Create URL
     const url = "https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWlsS0EifQ.JVC0NiFQ2dxbiO32Vb_7S8OMlobsNC3kfAUDGadfPYU"
-      
-    let elementName = ""
-    let currentValue = ""
-    let items = []
-    let currentItem = null
-    const xmlParser = new XMLParser(url)
+    let req = new Request(url)
+    let html = await req.loadString()
     
-    xmlParser.didStartElement = name => {
-    currentValue = ""
-      if (name == "data-value") {
-        currentItem = {}
-      }
-      if (name == "data-value") {
-         items.push(currentItem)
-         currentItem = {}
-       } 
-    }
+    let start = html.indexOf("data-value");
+    console.log("start: " + start);
     
-    xmlParser.didEndElement = name => {
-      const hasItem = currentItem != null
-      if (hasItem && name == "data-value") {
-        currentItem["data-value"] = currentValue
-      }       
-    }
-    xmlParser.foundCharacters = str => {
-      currentValue += str
-    }
+    let end = html.indexOf("visitorcount");
+    console.log("end: " + end);
     
-    return currentValue
+    let counter = html.substring(start+12,end-6);
+    console.log("counter: " + counter);
+    
+  return counter
+}
+
+
+async function currLeft() {
+    // Create URL
+    const url = "https://www.boulderado.de/boulderadoweb/gym-clientcounter/index.php?mode=get&token=eyJhbGciOiJIUzI1NiIsICJ0eXAiOiJKV1QifQ.eyJjdXN0b21lciI6IlN0ZWlsS0EifQ.JVC0NiFQ2dxbiO32Vb_7S8OMlobsNC3kfAUDGadfPYU"
+    let req = new Request(url)
+    let html = await req.loadString()
+    
+    let start = html.lastIndexOf("data-value");
+    console.log("start: " + start);
+    
+    let end = html.lastIndexOf("</span>");
+    console.log("end: " + end);
+    
+    let counter = html.substring(start+12,end-4);
+    console.log("counter: " + counter);
+    
+  return counter
 }
 
 
@@ -119,12 +135,12 @@ async function getImage(image) {
         // download once
         let imageUrl
         switch (image) {
-//             case 'steil-logo.png':
-//                 imageUrl = "http://felsundeis.com/wp-content/uploads/2020/03/Boulderhalle-Steil-Logo-720x340.jpg"
-//                 break
-         // get image from different source
-            case 'steiles-logo.png':
-                imageUrl = "https://boulderhalle-steil.com/wp-content/uploads/fbrfg/apple-touch-icon.png"             
+            case 'steil-logo.png':
+                imageUrl = "https://boulderhalle-steil.com/wp-content/uploads/fbrfg/apple-touch-icon.png"
+                break
+            case 'steil-logo.png':
+                imageUrl = "http://felsundeis.com/wp-content/uploads/2020/03/Boulderhalle-Steil-Logo-720x340.jpg"
+                // get image from different source                        
                 break
             default:
                 console.log(`Sorry, couldn't find ${image}.`);
@@ -134,6 +150,7 @@ async function getImage(image) {
         return iconImage
     }
 }
+
 
 // helper function / download image from url
 async function loadImage(imgUrl) {
