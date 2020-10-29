@@ -1,9 +1,14 @@
-![Screenshot](screenshot.jpg)
+![Screenshot](steilScreenshot.jpg)
 
 # SteilOccupancy
 Shows the current occupancy of Steil bouldering hall in a scriptable widget
 
-Wie man Scriptable-Widget dem Home-Screen hinzufügt
+This is a collection of iOS-Widget scrips, which can be used with the Scritable App.
+You have do download App "Scriptable" from the App Store:
+https://apps.apple.com/de/app/scriptable/id1405459188
+   
+
+# Wie man Scriptable-Widget dem Home-Screen hinzufügt
 
 Egal, für welches Widget Sie sich entschieden haben, das Einstellungsprozedere in iOS ist immer das gleiche:  
 
@@ -21,5 +26,4 @@ Egal, für welches Widget Sie sich entschieden haben, das Einstellungsprozedere 
    die sich nun auswählen lassen. Ziehen Sie das Widget anschließend auf eine Stelle im Bildschirm Ihrer Wahl und beenden Sie den Bearbeitungsmodus.
    
    https://www.macwelt.de/tipps/So-erstellen-Sie-eigene-iOS-Widgets-Klopapier-bei-DM-Corona-Zahlen-Datenvolumen-bei-Telekom-10910000.html
-   
    
